@@ -1,9 +1,15 @@
+using Microsoft.EntityFrameworkCore;
+using Workshop.Data;
 using Workshop.Components;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents();
+
+builder.Services.AddDbContextFactory<WorkshopContext>(o =>
+    o.UseSqlite("Data Source=workshop.db"));
+builder.Services.AddQuickGridEntityFrameworkAdapter();
 
 var app = builder.Build();
 
