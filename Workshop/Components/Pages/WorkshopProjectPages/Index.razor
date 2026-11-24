@@ -1,0 +1,60 @@
+@page "/workshopprojects"
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.Components.QuickGrid
+@using Workshop.Models
+@using Workshop.Data
+@implements IAsyncDisposable
+@inject IDbContextFactory<Workshop.Data.WorkshopContext> DbFactory
+
+<PageTitle>Index</PageTitle>
+
+<h1>Index</h1>
+
+<p>
+    <a href="workshopprojects/create">Create New</a>
+</p>
+
+<QuickGrid Class="table" Items="@context.WorkshopProjects.OrderBy(p => p.Id).Skip((CurrentPage - 1) * PageSize).Take(PageSize)">
+    <PropertyColumn Property="workshopproject => workshopproject.ProductName" />
+    <PropertyColumn Property="workshopproject => workshopproject.MaterialsSummary" />
+    <PropertyColumn Property="workshopproject => workshopproject.Notes" />
+    <PropertyColumn Property="workshopproject => workshopproject.MaterialCost" />
+    <PropertyColumn Property="workshopproject => workshopproject.SalePrice" />
+    <PropertyColumn Property="workshopproject => workshopproject.StartedOn" />
+    <PropertyColumn Property="workshopproject => workshopproject.DeadlineOn" />
+    <PropertyColumn Property="workshopproject => workshopproject.CompletedOn" />
+    <PropertyColumn Property="workshopproject => workshopproject.Stage" />
+
+    <TemplateColumn Context="workshopproject">
+        <a href="@($"workshopprojects/edit?id={workshopproject.Id}")">Edit</a> |
+        <a href="@($"workshopprojects/details?id={workshopproject.Id}")">Details</a> |
+        <a href="@($"workshopprojects/delete?id={workshopproject.Id}")">Delete</a>
+    </TemplateColumn>
+</QuickGrid>
+
+<nav>
+    @if (CurrentPage > 1)
+    {
+        <a class="btn btn-outline-secondary" href="@($"workshopprojects?page={CurrentPage - 1}")">Назад</a>
+    }
+    <span class="mx-2">Сторінка @CurrentPage</span>
+    @if (context.WorkshopProjects.Count() > CurrentPage * PageSize)
+    {
+        <a class="btn btn-outline-secondary" href="@($"workshopprojects?page={CurrentPage + 1}")">Далі</a>
+    }
+</nav>
+
+@code {
+    private WorkshopContext context = default!;
+
+    private const int PageSize = 10;
+    [SupplyParameterFromQuery] public int? Page { get; set; }
+    private int CurrentPage => Page is > 0 ? Page.Value : 1;
+
+    protected override void OnInitialized()
+    {
+        context = DbFactory.CreateDbContext();
+    }
+
+    public async ValueTask DisposeAsync() => await context.DisposeAsync();
+}

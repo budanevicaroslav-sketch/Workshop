@@ -1,0 +1,90 @@
+@page "/workshopprojects/create"
+@using Microsoft.EntityFrameworkCore
+@using Workshop.Models
+@inject IDbContextFactory<Workshop.Data.WorkshopContext> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Create</PageTitle>
+
+<h1>Create</h1>
+
+<h2>WorkshopProject</h2>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <EditForm method="post" Model="WorkshopProject" OnValidSubmit="AddWorkshopProject" FormName="create" Enhance>
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-danger" role="alert"/>
+            <div class="mb-3">
+                <label for="productname" class="form-label">ProductName:</label> 
+                <InputText id="productname" @bind-Value="WorkshopProject.ProductName" class="form-control" /> 
+                <ValidationMessage For="() => WorkshopProject.ProductName" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="materialssummary" class="form-label">MaterialsSummary:</label> 
+                <InputText id="materialssummary" @bind-Value="WorkshopProject.MaterialsSummary" class="form-control" /> 
+                <ValidationMessage For="() => WorkshopProject.MaterialsSummary" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="notes" class="form-label">Notes:</label> 
+                <InputText id="notes" @bind-Value="WorkshopProject.Notes" class="form-control" /> 
+                <ValidationMessage For="() => WorkshopProject.Notes" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="materialcost" class="form-label">MaterialCost:</label> 
+                <InputNumber id="materialcost" @bind-Value="WorkshopProject.MaterialCost" class="form-control" /> 
+                <ValidationMessage For="() => WorkshopProject.MaterialCost" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="saleprice" class="form-label">SalePrice:</label> 
+                <InputNumber id="saleprice" @bind-Value="WorkshopProject.SalePrice" class="form-control" /> 
+                <ValidationMessage For="() => WorkshopProject.SalePrice" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="startedon" class="form-label">StartedOn:</label> 
+                <InputDate id="startedon" @bind-Value="WorkshopProject.StartedOn" class="form-control" /> 
+                <ValidationMessage For="() => WorkshopProject.StartedOn" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="deadlineon" class="form-label">DeadlineOn:</label> 
+                <InputDate id="deadlineon" @bind-Value="WorkshopProject.DeadlineOn" class="form-control" /> 
+                <ValidationMessage For="() => WorkshopProject.DeadlineOn" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="completedon" class="form-label">CompletedOn:</label> 
+                <InputDate id="completedon" @bind-Value="WorkshopProject.CompletedOn" class="form-control" /> 
+                <ValidationMessage For="() => WorkshopProject.CompletedOn" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="stage" class="form-label">Stage:</label> 
+                <InputSelect id="stage" @bind-Value="WorkshopProject.Stage" class="form-control">
+                    @foreach (var stage in Enum.GetValues<ProjectStage>())
+                    {
+                        <option value="@stage">@stage</option>
+                    }
+                </InputSelect>
+                <ValidationMessage For="() => WorkshopProject.Stage" class="text-danger" /> 
+            </div>        
+            <button type="submit" class="btn btn-primary">Create</button>
+        </EditForm>
+    </div>
+</div>
+
+<div>
+    <a href="/workshopprojects">Back to List</a>
+</div>
+
+@code {
+    [SupplyParameterFromForm]
+    private WorkshopProject WorkshopProject { get; set; } = default!;
+
+    protected override void OnInitialized() => WorkshopProject ??= new();
+
+    private async Task AddWorkshopProject()
+    {
+        using var context = DbFactory.CreateDbContext();
+        context.WorkshopProjects.Add(WorkshopProject);
+        await context.SaveChangesAsync();
+        NavigationManager.NavigateTo("/workshopprojects");
+    }
+}
