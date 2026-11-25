@@ -1,0 +1,47 @@
+@if (!string.IsNullOrWhiteSpace(Caption))
+{
+    <p class="text-muted fw-semibold mb-1">@Caption</p>
+}
+
+<div class="card mb-3">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start mb-2">
+            <h5 class="card-title mb-0">@Project.ProductName</h5>
+            <span class="badge bg-primary">@Project.Stage</span>
+        </div>
+
+        <p class="card-text mb-1">
+            <strong>Матеріали:</strong> @Project.MaterialsSummary
+        </p>
+        <p class="card-text mb-2">
+            <strong>Собівартість:</strong> @Project.MaterialCost грн |
+            <strong>Ціна продажу:</strong> @Project.SalePrice грн
+        </p>
+
+        @if (ShowDetails)
+        {
+            <hr class="my-2" />
+            <p class="card-text mb-1"><strong>Початок:</strong> @Project.StartedOn</p>
+            <p class="card-text mb-1"><strong>Дедлайн:</strong> @Project.DeadlineOn</p>
+            @if (Project.CompletedOn is not null)
+            {
+                <p class="card-text mb-1"><strong>Завершено:</strong> @Project.CompletedOn</p>
+            }
+            @if (!string.IsNullOrWhiteSpace(Project.Notes))
+            {
+                <p class="card-text text-muted mb-0"><strong>Примітки:</strong> @Project.Notes</p>
+            }
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public WorkshopProject Project { get; set; } = default!;
+
+    [Parameter]
+    public string? Caption { get; set; }
+
+    [Parameter]
+    public bool ShowDetails { get; set; } = true;
+}
